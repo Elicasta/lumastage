@@ -1,0 +1,1 @@
+import{describe,it,expect}from"vitest";import{activationFor}from"./activation";describe("show activation",()=>it("is always load-only",()=>{const x=activationFor({type:"shared-show.snapshot",protocol:"shared-show-v1",show:{protocol:"shared-show-v1",id:"a",name:"A",revision:2,createdAt:1,updatedAt:1,setlist:[],documents:{}}});expect(x.mode).toBe("load-only")}));
