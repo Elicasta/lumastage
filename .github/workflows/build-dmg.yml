@@ -1,0 +1,22 @@
+name: Build macOS LumaStage DMG
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: dtolnay/rust-toolchain@stable
+      - run: npm install
+      - run: mkdir -p src-tauri/icons && printf 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==' | base64 -D > src-tauri/icons/icon.png
+      - run: npm run build:desktop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LumaStage-macOS-DMG
+          path: src-tauri/target/release/bundle/dmg/*.dmg
+          if-no-files-found: error
