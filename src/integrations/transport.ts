@@ -1,0 +1,7 @@
+import{fromLegacyStudioMedia,isShowBusFrame,type ShowBusFrame,type StageProgramFrame,type StageVizFrame}from"./showBus";import{stageRuntime}from"../runtime/stageStore";
+export type LumaEnvelope=ShowBusFrame|StageProgramFrame|StageVizFrame|{type:"lumastudio.media";[key:string]:unknown};
+export interface StageTransport{start():()=>void;publishProgram(frame:StageProgramFrame):void;publishViz(frame:StageVizFrame):void;}
+const EVENT_IN="luma:showbus:in",EVENT_PROGRAM="luma:stage:program",EVENT_VIZ="luma:stage:viz";
+export class BrowserStageTransport implements StageTransport{start(){const onMessage=(event:Event)=>{const payload=(event as CustomEvent).detail;if(isShowBusFrame(payload))stageRuntime.receiveShow(payload);else if(payload?.type==="lumastudio.media")stageRuntime.receiveShow(fromLegacyStudioMedia(payload));};window.addEventListener(EVENT_IN,onMessage);return()=>window.removeEventListener(EVENT_IN,onMessage)}publishProgram(frame:StageProgramFrame){window.dispatchEvent(new CustomEvent(EVENT_PROGRAM,{detail:frame}))}publishViz(frame:StageVizFrame){window.dispatchEvent(new CustomEvent(EVENT_VIZ,{detail:frame}))}}
+export function injectShowFrame(frame:LumaEnvelope){window.dispatchEvent(new CustomEvent(EVENT_IN,{detail:frame}))}
+export const stageTransport=new BrowserStageTransport();
