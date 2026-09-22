@@ -1,0 +1,1 @@
+import{describe,it,expect}from"vitest";import{variantFromEnergy}from"./variantResolver";describe("energy variants",()=>{it("maps normalized energy into stable bands",()=>{expect(variantFromEnergy(.1)).toBe("low");expect(variantFromEnergy(.4)).toBe("mid");expect(variantFromEnergy(.7)).toBe("high");expect(variantFromEnergy(.95)).toBe("peak")})});
