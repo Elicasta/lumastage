@@ -25,5 +25,5 @@ jobs:
           node-version: 22
       - uses: dtolnay/rust-toolchain@stable
       - run: npm install
-      - run: mkdir -p src-tauri/icons && cp .github/assets/lumastage-ci-icon.png src-tauri/icons/icon.png
+      - run: mkdir -p src-tauri/icons && printf 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==' | base64 --decode > src-tauri/icons/icon.png
       - run: cargo check --manifest-path src-tauri/Cargo.toml
