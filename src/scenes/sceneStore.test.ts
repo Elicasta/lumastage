@@ -1,0 +1,1 @@
+import{describe,it,expect}from"vitest";import{sceneStore}from"./sceneStore";describe("scene store",()=>it("ships a production collection",()=>expect(sceneStore.get("established-red")?.collection).toBe("Apostolic Day 2026")));
