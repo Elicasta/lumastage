@@ -1,0 +1,1 @@
+import{describe,it,expect}from"vitest";import{sanitizeEffects}from"./effectPresets";describe("effect presets",()=>it("clamps and removes inactive effects",()=>expect(sanitizeEffects([{id:"a",kind:"bloom",enabled:true,amount:2},{id:"b",kind:"grain",enabled:false,amount:.4}])).toEqual([{id:"a",kind:"bloom",enabled:true,amount:1}])));
