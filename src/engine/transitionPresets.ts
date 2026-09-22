@@ -1,0 +1,1 @@
+import type{TransitionSpec}from"./gpu/types";export const transitionPresets:Record<string,TransitionSpec>={CUT:{kind:"cut",durationMs:0,easing:"linear"},DISSOLVE:{kind:"dissolve",durationMs:1000,easing:"ease-in-out"},FADE:{kind:"dip-black",durationMs:1500,easing:"ease-in-out"},SLOW:{kind:"dissolve",durationMs:3000,easing:"ease-in-out"}};
