@@ -1,0 +1,1 @@
+fn main(){lumastage_lib::run();}
