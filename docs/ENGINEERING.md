@@ -30,3 +30,9 @@ Persist show-safe state locally. On relaunch offer Restore Show rather than sile
 
 ### Diagnostics
 Expose frame time, dropped frames, decoder queue depth, output latency, peer latency and media cache pressure in a diagnostics drawer. Keep it out of the normal volunteer workflow.
+
+## Preflight implemented
+The operator can now run a deterministic preflight report. Blockers prevent a show-ready state, warnings permit deliberate manual operation, and informational findings never affect Program. Current checks cover renderer readiness, transport availability/latency, required media/codec state, output availability/resolution and render performance.
+
+## Compositor milestone
+A master FrameClock and compositor runtime now produce measurable frames from the RenderGraph. This is intentionally behind an engine boundary so the initial deterministic implementation can be replaced by a WebGPU/wgpu backend without changing show state, preflight, or output contracts.
