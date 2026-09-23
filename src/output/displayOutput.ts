@@ -2,6 +2,7 @@ import { WebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { engineHealth } from "../engine/health";
 import {
   displayChannelName,
+  isCurrentDisplayAck,
   isDisplayRelayMessage,
   relayStateFromAck,
   shouldAcceptDisplayAck,
@@ -14,6 +15,7 @@ type Session = {
   status: DisplayRelayStatus;
   channel: BroadcastChannel;
   window?: WebviewWindow;
+  ackFloor: number;
   lastSentSequence: number;
   lastAckSequence: number;
 };
@@ -80,7 +82,14 @@ class DisplayOutputManager {
     let session = this.sessions.get(target.id);
     if (!session) {
       const channel = new BroadcastChannel(displayChannelName(target.id));
-      session = { target, channel, status: { ...initialStatus(target.id), state: "opening" }, lastSentSequence: 0, lastAckSequence: -1 };
+      session = {
+        target,
+        channel,
+        status: { ...initialStatus(target.id), state: "opening" },
+        ackFloor: this.sequence + 1,
+        lastSentSequence: this.sequence,
+        lastAckSequence: -1
+      };
       this.sessions.set(target.id, session);
       channel.onmessage = event => {
         if (!isDisplayRelayMessage(event.data) || event.data.targetId !== target.id) return;
@@ -95,6 +104,12 @@ class DisplayOutputManager {
         }
         if (event.data.type === "ack") {
           const now = Date.now();
+          if (!isCurrentDisplayAck(
+            event.data.sequence,
+            current.ackFloor,
+            current.lastSentSequence,
+            current.lastAckSequence
+          )) return;
           if (!shouldAcceptDisplayAck(event.data, current.lastAckSequence, current.lastSentSequence, now)) return;
           current.lastAckSequence = event.data.sequence;
           current.status = {
@@ -110,7 +125,17 @@ class DisplayOutputManager {
       };
     } else {
       session.target = target;
-      session.status = { ...session.status, state: "opening", lastError: undefined };
+      session.ackFloor = this.sequence + 1;
+      session.lastSentSequence = this.sequence;
+      session.lastAckSequence = -1;
+      session.status = {
+        ...session.status,
+        state: "opening",
+        framesAcked: 0,
+        latencyMs: null,
+        lastAckAt: null,
+        lastError: undefined
+      };
     }
     this.changed();
 
@@ -184,7 +209,8 @@ class DisplayOutputManager {
         target,
         channel,
         status: { ...initialStatus(target.id), state: "error", lastError: message },
-        lastSentSequence: 0,
+        ackFloor: this.sequence + 1,
+        lastSentSequence: this.sequence,
         lastAckSequence: -1
       });
     }
