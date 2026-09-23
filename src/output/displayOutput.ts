@@ -50,7 +50,7 @@ class DisplayOutputManager {
 
   subscribe = (listener: () => void) => {
     this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+    return () => { this.listeners.delete(listener); };
   };
 
   setSource(provider: () => HTMLCanvasElement | undefined) {
