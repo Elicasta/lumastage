@@ -58,7 +58,6 @@ fn start_lumastudio_media_listener(
     std::thread::spawn(move || loop {
         match TcpStream::connect(LUMASTUDIO_MEDIA_ADDR) {
             Ok(mut stream) => {
-                let _ = stream.set_read_timeout(Some(Duration::from_secs(3)));
                 let _ = app.emit("lumastudio-media-status", "connected");
 
                 loop {
