@@ -34,4 +34,30 @@ describe('local media', () => {
     pool.stop();
     expect(pool.programId()).toBeNull();
   });
+
+  it('cancels an in-flight video TAKE if the operator selects another preview', async () => {
+    let start!: () => void;
+    class Video {
+      oncanplay?: () => void; onerror?: () => void; onended?: () => void;
+      preload = ''; muted = false; playsInline = false; loop = false; src = '';
+      videoWidth = 1920; videoHeight = 1080; duration = 10; currentTime = 0;
+      paused = false;
+      load() {} removeAttribute(_name: string) {}
+      play() { return new Promise<void>(resolve => { start = resolve; }); }
+      pause() { this.paused = true; }
+    }
+    const video = new Video();
+    vi.stubGlobal('HTMLVideoElement', Video);
+    vi.stubGlobal('document', { createElement: () => video });
+    const pool = new MediaPool();
+    pool.register({ id: 'clip', path: '/show/clip.mp4', uri: 'asset://clip', kind: 'video', name: 'Clip' });
+    video.oncanplay?.();
+    pool.cue('clip');
+    const take = pool.take();
+    pool.cue(null);
+    start();
+    expect(await take).toBe(false);
+    expect(video.paused).toBe(true);
+    expect(pool.programId()).toBeNull();
+  });
 });
