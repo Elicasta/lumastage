@@ -49,13 +49,16 @@ export class MediaPool {
   programId() { return this.program; }
   source() { return this.program ? this.elements.get(this.program) : undefined; }
 
-  register(asset: MediaAsset) {
-    if (this.assets.get(asset.id)?.uri === asset.uri) return;
+  register(asset: MediaAsset, preload = true) {
+    if (this.assets.get(asset.id)?.uri === asset.uri) {
+      if (preload && this.state(asset.id) === "idle") this.preload(asset.id);
+      return;
+    }
     this.evict(asset.id);
     this.assets.set(asset.id, asset);
     this.states.set(asset.id, "idle");
     this.changed();
-    this.preload(asset.id);
+    if (preload) this.preload(asset.id);
   }
 
   preload(id: string) {
@@ -94,7 +97,20 @@ export class MediaPool {
     if (this.program === id) this.program = null;
     this.states.set(id,"error"); this.errors.set(id,message); this.changed();
   }
-  cue(id: string | null) { if (id && !this.assets.has(id)) return; this.takeVersion++; this.preview = id; this.changed(); }
+  cue(id: string | null) {
+    if (id && !this.assets.has(id)) return;
+    this.takeVersion++;
+    this.preview = id;
+    if (id && this.state(id) === "idle") this.preload(id);
+    this.changed();
+  }
+  isTaking() { return this.taking; }
+  programPositionSeconds() {
+    const id = this.program;
+    if (!id) return 0;
+    const source = this.elements.get(id);
+    return source instanceof HTMLVideoElement && Number.isFinite(source.currentTime) ? source.currentTime : 0;
+  }
   async take(): Promise<boolean> {
     if (this.taking) return false;
     const version = ++this.takeVersion;
@@ -104,10 +120,10 @@ export class MediaPool {
     if (!source) return false;
     const previous = this.program;
     if (source instanceof HTMLVideoElement) {
-      this.taking = true;
+      this.taking = true; this.changed();
       try { source.currentTime = 0; await source.play(); }
       catch { if (version === this.takeVersion && this.elements.get(id) === source) this.fail(id,source,"The video could not start. Check the file and codec."); return false; }
-      finally { this.taking = false; }
+      finally { this.taking = false; this.changed(); }
       if (version !== this.takeVersion || this.preview !== id || this.elements.get(id) !== source) { source.pause(); return false; }
     }
     if (previous && previous !== id) this.stop();
