@@ -20,6 +20,12 @@ describe("display relay protocol", () => {
     expect(isDisplayRelayMessage({ type: "ack", targetId: "output-0", sequence: 2, sentAt: 10, receivedAt: 20 })).toBe(true);
     expect(isDisplayRelayMessage({ type: "ack", targetId: "output-0", sequence: -1, sentAt: 10, receivedAt: 20 })).toBe(false);
   });
+  it("accepts only ACKs for frames sent by the current display session", () => {
+    expect(isCurrentDisplayAck(42, 40, 45, 41)).toBe(true);
+    expect(isCurrentDisplayAck(39, 40, 45, -1)).toBe(false);
+    expect(isCurrentDisplayAck(46, 40, 45, 41)).toBe(false);
+    expect(isCurrentDisplayAck(41, 40, 45, 41)).toBe(false);
+  });
 
   it("accepts only fresh acknowledgements for frames sent by this session", () => {
     const now = 10_000;
