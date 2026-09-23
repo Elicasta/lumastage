@@ -27,3 +27,4 @@ jobs:
       - run: npm install
       - run: mkdir -p src-tauri/icons && printf 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==' | base64 -D > src-tauri/icons/icon.png
       - run: cargo check --manifest-path src-tauri/Cargo.toml
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
