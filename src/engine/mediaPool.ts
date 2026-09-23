@@ -37,6 +37,7 @@ export class MediaPool {
   private program: string | null = null;
   private errors = new Map<string,string>();
   private takeVersion = 0;
+  private taking = false;
 
   subscribe = (listener: () => void) => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   private changed() { this.listeners.forEach(listener => listener()); }
@@ -95,6 +96,7 @@ export class MediaPool {
   }
   cue(id: string | null) { if (id && !this.assets.has(id)) return; this.takeVersion++; this.preview = id; this.changed(); }
   async take(): Promise<boolean> {
+    if (this.taking) return false;
     const version = ++this.takeVersion;
     const id = this.preview;
     if (!id || !["ready","paused","playing"].includes(this.state(id))) return false;
@@ -102,8 +104,10 @@ export class MediaPool {
     if (!source) return false;
     const previous = this.program;
     if (source instanceof HTMLVideoElement) {
+      this.taking = true;
       try { source.currentTime = 0; await source.play(); }
-      catch { this.fail(id,source,"The video could not start. Check the file and codec."); return false; }
+      catch { if (version === this.takeVersion && this.elements.get(id) === source) this.fail(id,source,"The video could not start. Check the file and codec."); return false; }
+      finally { this.taking = false; }
       if (version !== this.takeVersion || this.preview !== id || this.elements.get(id) !== source) { source.pause(); return false; }
     }
     if (previous && previous !== id) this.stop();
