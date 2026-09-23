@@ -14,7 +14,7 @@ function persist() { saveMediaLibrary(localStorage, mediaPool.list()); }
 export function RestoreMediaLibrary() {
   useEffect(() => {
     if (!isTauri()) return;
-    for (const item of readMediaLibrary(localStorage)) mediaPool.register({ ...item, uri: convertFileSrc(item.path) });
+    for (const item of readMediaLibrary(localStorage)) mediaPool.register({ ...item, uri: convertFileSrc(item.path) }, false);
   }, []);
   return null;
 }
