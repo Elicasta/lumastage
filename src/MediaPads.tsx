@@ -20,8 +20,10 @@ export function MediaPads() {
     {files.length === 0 ? <p className="clip-empty">Use MEDIA in the top bar to import local images or video.</p> :
       <div className="clip-grid">{clips.map(file => {
         const state = pool.state(file.id);
-        const status = pool.programId() === file.id ? 'PROGRAM' : pool.previewId() === file.id ? 'CUED' : state === 'error' ? 'FILE ERROR' : state === 'loading' ? 'LOADING' : 'READY';
-        return <button key={file.id} className={'clip-pad' + (status === 'PROGRAM' ? ' playing' : status === 'CUED' ? ' cued' : '')}
+        const isProgram = pool.programId() === file.id;
+        const isPreview = pool.previewId() === file.id;
+        const status = isProgram ? 'PROGRAM' : state === 'error' ? 'FILE ERROR' : state === 'loading' ? 'LOADING' : isPreview ? 'CUED' : state === 'idle' ? 'LOAD ON CUE' : 'READY';
+        return <button key={file.id} className={'clip-pad' + (isProgram ? ' playing' : isPreview ? ' cued' : '')}
           disabled={state === 'error' || state === 'loading'} title={pool.error(file.id) ?? file.path} onClick={() => pool.cue(file.id)}
           aria-label={`Cue ${file.name}, ${status.toLowerCase()}`}>
           <span className="clip-kind">{file.kind.toUpperCase()}</span><strong>{file.name}</strong>
