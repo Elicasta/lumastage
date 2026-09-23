@@ -48,11 +48,11 @@ export function isDisplayRelayMessage(value: unknown): value is DisplayRelayMess
   if (typeof message.type !== "string" || typeof message.targetId !== "string" || !message.targetId) return false;
   if (message.type === "hello") return typeof message.at === "number" && Number.isFinite(message.at);
   if (message.type === "ack") {
-    return Number.isSafeInteger(message.sequence) && typeof message.sentAt === "number" && Number.isFinite(message.sentAt)
+    return Number.isSafeInteger(message.sequence) && (message.sequence as number) >= 0 && typeof message.sentAt === "number" && Number.isFinite(message.sentAt)
       && typeof message.receivedAt === "number" && Number.isFinite(message.receivedAt);
   }
   if (message.type === "frame") {
-    return Number.isSafeInteger(message.sequence) && typeof message.sentAt === "number" && Number.isFinite(message.sentAt)
+    return Number.isSafeInteger(message.sequence) && (message.sequence as number) >= 0 && typeof message.sentAt === "number" && Number.isFinite(message.sentAt)
       && message.blob instanceof Blob && typeof message.sourceWidth === "number" && message.sourceWidth > 0
       && typeof message.sourceHeight === "number" && message.sourceHeight > 0;
   }
