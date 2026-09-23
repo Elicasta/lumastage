@@ -112,11 +112,12 @@ class DisplayOutputManager {
     try {
       const label = labelFor(target.id);
       const existing = await WebviewWindow.getByLabel(label);
+      const windowScale = Math.min(1, 1600 / target.width, 900 / target.height);
       const outputWindow = existing ?? new WebviewWindow(label, {
         url: `/?output=display&target=${encodeURIComponent(target.id)}&width=${target.width}&height=${target.height}`,
         title: `LumaStage · ${target.name}`,
-        width: Math.min(target.width, 1600),
-        height: Math.min(target.height, 900),
+        width: Math.max(320, Math.round(target.width * windowScale)),
+        height: Math.max(240, Math.round(target.height * windowScale)),
         minWidth: 480,
         minHeight: 270,
         resizable: true,
