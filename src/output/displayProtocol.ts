@@ -38,6 +38,18 @@ export function fitRect(sourceWidth: number, sourceHeight: number, targetWidth: 
   return { x: (targetWidth - width) / 2, y: (targetHeight - height) / 2, width, height };
 }
 
+export function shouldAcceptDisplayAck(
+  ack: Extract<DisplayRelayMessage, { type: "ack" }>,
+  lastAckSequence: number,
+  lastSentSequence: number,
+  now = Date.now()
+) {
+  if (ack.sequence <= lastAckSequence || ack.sequence > lastSentSequence) return false;
+  if (ack.sentAt > ack.receivedAt) return false;
+  if (ack.receivedAt > now + 250) return false;
+  return Math.max(0, now - ack.receivedAt) <= 1500;
+}
+
 export function relayStateFromAck(lastAckAt: number | null, now = Date.now()): Exclude<DisplayRelayState, "closed" | "opening" | "error"> {
   return lastAckAt !== null && Math.max(0, now - lastAckAt) <= 1500 ? "live" : "waiting";
 }
