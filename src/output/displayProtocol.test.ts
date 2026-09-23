@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { displayChannelName, fitRect, isDisplayRelayMessage, relayStateFromAck, shouldAcceptDisplayAck } from "./displayProtocol";
+import { displayChannelName, fitRect, isCurrentDisplayAck, isDisplayRelayMessage, relayStateFromAck, shouldAcceptDisplayAck } from "./displayProtocol";
 
 describe("display relay protocol", () => {
   it("letterboxes a 16:9 program into portrait output without cropping", () => {
