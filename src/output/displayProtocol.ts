@@ -54,6 +54,18 @@ export function relayStateFromAck(lastAckAt: number | null, now = Date.now()): E
   return lastAckAt !== null && Math.max(0, now - lastAckAt) <= 1500 ? "live" : "waiting";
 }
 
+export function isCurrentDisplayAck(
+  sequence: number,
+  ackFloor: number,
+  lastSentSequence: number,
+  lastAckSequence: number
+) {
+  return Number.isSafeInteger(sequence)
+    && sequence >= ackFloor
+    && sequence <= lastSentSequence
+    && sequence > lastAckSequence;
+}
+
 export function isDisplayRelayMessage(value: unknown): value is DisplayRelayMessage {
   if (!value || typeof value !== "object") return false;
   const message = value as Partial<DisplayRelayMessage>;
