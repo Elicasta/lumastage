@@ -4,6 +4,7 @@ import {
   displayChannelName,
   isDisplayRelayMessage,
   relayStateFromAck,
+  shouldAcceptDisplayAck,
   type DisplayRelayStatus,
   type DisplayTargetDefinition
 } from "./displayProtocol";
@@ -13,6 +14,8 @@ type Session = {
   status: DisplayRelayStatus;
   channel: BroadcastChannel;
   window?: WebviewWindow;
+  lastSentSequence: number;
+  lastAckSequence: number;
 };
 
 const RELAY_FPS = 30;
@@ -77,7 +80,7 @@ class DisplayOutputManager {
     let session = this.sessions.get(target.id);
     if (!session) {
       const channel = new BroadcastChannel(displayChannelName(target.id));
-      session = { target, channel, status: { ...initialStatus(target.id), state: "opening" } };
+      session = { target, channel, status: { ...initialStatus(target.id), state: "opening" }, lastSentSequence: 0, lastAckSequence: -1 };
       this.sessions.set(target.id, session);
       channel.onmessage = event => {
         if (!isDisplayRelayMessage(event.data) || event.data.targetId !== target.id) return;
@@ -92,6 +95,8 @@ class DisplayOutputManager {
         }
         if (event.data.type === "ack") {
           const now = Date.now();
+          if (!shouldAcceptDisplayAck(event.data, current.lastAckSequence, current.lastSentSequence, now)) return;
+          current.lastAckSequence = event.data.sequence;
           current.status = {
             ...current.status,
             state: "live",
@@ -178,7 +183,9 @@ class DisplayOutputManager {
       this.sessions.set(target.id, {
         target,
         channel,
-        status: { ...initialStatus(target.id), state: "error", lastError: message }
+        status: { ...initialStatus(target.id), state: "error", lastError: message },
+        lastSentSequence: 0,
+        lastAckSequence: -1
       });
     }
     this.changed();
@@ -224,6 +231,7 @@ class DisplayOutputManager {
       const sequence = ++this.sequence;
       for (const session of this.sessions.values()) {
         if (session.status.state === "error" || session.status.state === "closed") continue;
+        session.lastSentSequence = sequence;
         session.channel.postMessage({
           type: "frame",
           targetId: session.target.id,
