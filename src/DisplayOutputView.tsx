@@ -75,5 +75,9 @@ export function DisplayOutputView() {
     };
   }, []);
 
-  return <main className="display-output-root"><canvas ref={canvasRef} aria-label="LumaStage external display output" /></main>;
+  const params = new URLSearchParams(window.location.search);
+  const width = numberParam(params, "width", 1920);
+  const height = numberParam(params, "height", 1080);
+  const ratio = width / height;
+  return <main className="display-output-root"><canvas ref={canvasRef} aria-label="LumaStage external display output" style={{ width: `min(100vw, calc(100vh * ${ratio}))`, height: `min(100vh, calc(100vw / ${ratio}))` }} /></main>;
 }
