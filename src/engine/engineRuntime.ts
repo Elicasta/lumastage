@@ -3,6 +3,7 @@ import { CanvasCompositor } from './compositor';
 import { renderGraph } from './renderGraph';
 import { starterScenes } from './starterScenes';
 import { engineHealth } from './health';
+import { mediaPool } from './mediaPool';
 export const playableScenes = new Map([[0, starterScenes[0]], [2, starterScenes[1]]]);
 class EngineRuntime {
   private compositor?: CanvasCompositor;
@@ -21,7 +22,7 @@ class EngineRuntime {
       if (!this.settings.frozen) this.time += delta * this.settings.speed;
       const frame = renderGraph.frame(this.time);
       if (!frame || !this.compositor) return;
-      const stats = this.compositor.render(frame, this.settings.blackout ? 0 : this.settings.intensity);
+      const stats = this.compositor.render(frame, this.settings.blackout ? 0 : this.settings.intensity, mediaPool.source());
       engineHealth.update({ fps: stats.fps, frameTimeMs: stats.frameTimeMs, droppedFrames: stats.droppedFrames });
     });
   }
