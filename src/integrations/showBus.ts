@@ -32,7 +32,11 @@ export function fromLegacyStudioMedia(frame:any):ShowBusFrame{
       positionSeconds:Number.isFinite(position)&&position>=0?position:0,
       durationSeconds:Number.isFinite(duration)&&duration>=0?duration:undefined,
       bpm:Number.isFinite(bpm)&&bpm>0?bpm:undefined,
-      playback:frame?.playing?"playing":"paused"
+      playback:["playing","paused","stopped"].includes(String(frame?.playback))
+        ?frame.playback
+        :frame?.playing
+          ?"playing"
+          :"paused"
     },
     section:sectionName?{
       id:typeof frame?.sectionId==="string"?frame.sectionId:undefined,
