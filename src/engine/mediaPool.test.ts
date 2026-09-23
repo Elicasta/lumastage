@@ -16,6 +16,21 @@ describe('local media', () => {
     expect(readMediaLibrary(storage)).toEqual([{ id: 'a', name: 'Still', path: '/show/still.jpg', kind: 'image' }]);
   });
 
+  it('restores media lazily and begins preload only when the operator cues it', () => {
+    const images: Array<{ onload?: () => void; naturalWidth: number; naturalHeight: number; src: string }> = [];
+    vi.stubGlobal('Image', class { onload?: () => void; onerror?: () => void; naturalWidth = 1280; naturalHeight = 720; src = ''; constructor() { images.push(this); } });
+    vi.stubGlobal('HTMLVideoElement', class {});
+    const pool = new MediaPool();
+    pool.register({ id: 'lazy', path: '/show/lazy.jpg', uri: 'asset://lazy', kind: 'image', name: 'Lazy' }, false);
+    expect(pool.state('lazy')).toBe('idle');
+    expect(images).toHaveLength(0);
+    pool.cue('lazy');
+    expect(pool.state('lazy')).toBe('loading');
+    expect(images).toHaveLength(1);
+    images[0].onload?.();
+    expect(pool.state('lazy')).toBe('ready');
+  });
+
   it('cannot take an image until it decodes; a failed decode blocks TAKE and retry can recover', async () => {
     const images: Array<{ onload?: () => void; onerror?: () => void; naturalWidth: number; naturalHeight: number; src: string }> = [];
     vi.stubGlobal('Image', class { onload?: () => void; onerror?: () => void; naturalWidth = 1920; naturalHeight = 1080; src = ''; constructor() { images.push(this); } });
@@ -54,9 +69,11 @@ describe('local media', () => {
     video.oncanplay?.();
     pool.cue('clip');
     const take = pool.take();
+    expect(pool.isTaking()).toBe(true);
     pool.cue(null);
     start();
     expect(await take).toBe(false);
+    expect(pool.isTaking()).toBe(false);
     expect(video.paused).toBe(true);
     expect(pool.programId()).toBeNull();
   });
