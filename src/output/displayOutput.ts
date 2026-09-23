@@ -71,7 +71,7 @@ class DisplayOutputManager {
 
   async open(target: DisplayTargetDefinition) {
     if (!this.available()) {
-      throw this.fail(target, "Display windows are available only in the LumaStage desktop app.");
+      throw new Error("Display windows are available only in the LumaStage desktop app.");
     }
 
     let session = this.sessions.get(target.id);
