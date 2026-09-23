@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { displayChannelName, fitRect, isDisplayRelayMessage, relayStateFromAck } from "./displayProtocol";
+import { displayChannelName, fitRect, isDisplayRelayMessage, relayStateFromAck, shouldAcceptDisplayAck } from "./displayProtocol";
 
 describe("display relay protocol", () => {
   it("letterboxes a 16:9 program into portrait output without cropping", () => {
@@ -19,5 +19,33 @@ describe("display relay protocol", () => {
   it("rejects malformed acknowledgements", () => {
     expect(isDisplayRelayMessage({ type: "ack", targetId: "output-0", sequence: 2, sentAt: 10, receivedAt: 20 })).toBe(true);
     expect(isDisplayRelayMessage({ type: "ack", targetId: "output-0", sequence: -1, sentAt: 10, receivedAt: 20 })).toBe(false);
+  });
+
+  it("accepts only fresh acknowledgements for frames sent by this session", () => {
+    const now = 10_000;
+    expect(shouldAcceptDisplayAck(
+      { type: "ack", targetId: "output-0", sequence: 8, sentAt: 9_900, receivedAt: 9_950 },
+      7,
+      8,
+      now
+    )).toBe(true);
+    expect(shouldAcceptDisplayAck(
+      { type: "ack", targetId: "output-0", sequence: 7, sentAt: 9_800, receivedAt: 9_900 },
+      7,
+      8,
+      now
+    )).toBe(false);
+    expect(shouldAcceptDisplayAck(
+      { type: "ack", targetId: "output-0", sequence: 9, sentAt: 9_900, receivedAt: 9_950 },
+      7,
+      8,
+      now
+    )).toBe(false);
+    expect(shouldAcceptDisplayAck(
+      { type: "ack", targetId: "output-0", sequence: 8, sentAt: 7_000, receivedAt: 7_100 },
+      7,
+      8,
+      now
+    )).toBe(false);
   });
 });
