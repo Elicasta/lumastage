@@ -1,1 +1,1 @@
-{"identifier":"default","description":"Local media selection for the Stage window","windows":["main"],"permissions":["core:default","dialog:allow-open"]}
+{"identifier":"default","description":"Operator capability for the main LumaStage window","windows":["main"],"permissions":["core:default","core:webview:allow-create-webview-window","core:window:allow-show","core:window:allow-close","core:window:allow-set-fullscreen","dialog:allow-open"]}
