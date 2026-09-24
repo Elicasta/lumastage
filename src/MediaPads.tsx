@@ -31,6 +31,6 @@ export function MediaPads() {
           <em>{status}</em>
         </button>;
       })}</div>}
-    <p className="clip-route">Local Program renderer · video audio muted · external screen output unavailable</p>
+    <p className="clip-route">Local Program renderer · video audio muted · display delivery status above</p>
   </section>;
 }
