@@ -2,7 +2,7 @@ name: Build macOS LumaStage DMG
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, review/operator-ui]
 jobs:
   build:
     runs-on: macos-latest

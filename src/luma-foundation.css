@@ -1,0 +1,178 @@
+/* LUMA operator foundation v2. Keep tokens aligned across the ecosystem. */
+:root {
+  color-scheme: dark;
+  --luma-canvas: #0b1117;
+  --luma-chrome: #101820;
+  --luma-panel: #141e27;
+  --luma-raised: #1b2731;
+  --luma-raised-strong: #22323e;
+  --luma-line: #30414d;
+  --luma-line-strong: #455d6b;
+  --luma-text: #e4edf3;
+  --luma-muted: #9aadb9;
+  --luma-dim: #70828f;
+  --luma-focus: #9dc6ea;
+  --luma-live: #78dda9;
+  --luma-preview: #8fb9e3;
+  --luma-cued: #d9b878;
+  --luma-danger: #eda0a5;
+  --luma-radius: 6px;
+}
+
+body { background: var(--luma-canvas); }
+:is(.app-shell, .app) { color: var(--luma-text); }
+:is(.app-shell, .app) :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--luma-focus);
+  outline-offset: 2px;
+}
+:is(.app-shell, .app) :is(input, select, textarea) { font-variant-numeric: tabular-nums; }
+:is(.app-shell, .app) button:disabled { cursor: not-allowed; }
+:is(.app-shell, .app) button {
+  transition: border-color 100ms ease, background-color 100ms ease, color 100ms ease;
+}
+:is(.app-shell, .app) * { scrollbar-color: var(--luma-line-strong) var(--luma-chrome); }
+@media (prefers-reduced-motion: reduce) {
+  :is(.app-shell, .app) button { transition: none; }
+}
+
+/* Stage: preview/program dominate, routing and authority remain unmistakable. */
+.app { background: var(--luma-canvas); }
+.app .top {
+  border-color: var(--luma-line);
+  background: var(--luma-chrome);
+  box-shadow: 0 8px 22px rgba(0,0,0,.12);
+}
+.app .top nav button {
+  min-height: 38px;
+  border-radius: 5px;
+  color: var(--luma-muted);
+  font-size: 11px;
+  letter-spacing: .09em;
+}
+.app .top nav button:hover { color: var(--luma-text); background: var(--luma-raised); }
+.app .top nav button.active {
+  color: var(--luma-text);
+  background: var(--luma-raised-strong);
+  box-shadow: inset 0 -2px var(--luma-focus);
+}
+.app button { border-radius: 5px; }
+.app .panel {
+  border-color: var(--luma-line);
+  border-radius: 7px;
+  background: var(--luma-panel);
+}
+.app .panel > header,
+.app .panel header {
+  min-height: 44px;
+  border-color: var(--luma-line);
+  background: var(--luma-chrome);
+  font-size: 11px;
+  letter-spacing: .09em;
+}
+.app .dual > div {
+  border-color: var(--luma-line);
+  border-radius: 7px;
+  background: var(--luma-panel);
+}
+.app .render-monitor {
+  border: 1px solid var(--luma-line);
+  border-radius: 5px;
+  background: #030608;
+}
+.app .monitor-caption {
+  min-height: 27px;
+  color: var(--luma-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.app .takebar {
+  border-color: var(--luma-line);
+  background: var(--luma-panel);
+}
+.app .takebar > button {
+  border: 1px solid color-mix(in srgb, var(--luma-live) 55%, var(--luma-line));
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--luma-live) 78%, white);
+  color: #10271f;
+}
+.app .scene {
+  border-color: var(--luma-line);
+  border-radius: 5px;
+  background: var(--luma-raised);
+}
+.app .scene:hover { border-color: var(--luma-line-strong); }
+.app .scene.selected {
+  border-color: var(--luma-preview);
+  background: var(--luma-raised-strong);
+  box-shadow: inset 3px 0 var(--luma-preview);
+}
+.app .scene small,
+.app .clip-kind,
+.app .clip-pad small,
+.app .clip-pad em {
+  font-size: 10px;
+}
+.app .scene > span { font-size: 12px; }
+.app .clip-pad {
+  min-height: 104px;
+  padding: 12px;
+  border-color: var(--luma-line);
+  border-radius: 5px;
+  background: var(--luma-raised);
+}
+.app .clip-pad:hover:not(:disabled) { border-color: var(--luma-line-strong); }
+.app .clip-pad.cued {
+  border-color: var(--luma-preview);
+  box-shadow: inset 0 0 0 1px var(--luma-preview);
+}
+.app .clip-pad.playing {
+  border-color: var(--luma-live);
+  background: color-mix(in srgb, var(--luma-live) 12%, var(--luma-raised));
+}
+.app .clip-pad strong { font-size: 12px; }
+.app .clip-pad em { position: static; margin-top: auto; }
+.app .inspector > label,
+.app .inspector > b {
+  font-size: 11px;
+  line-height: 1.5;
+}
+.app .buttonrow button,
+.app .wide {
+  min-height: 34px;
+  font-size: 10px;
+}
+.app .live-status {
+  border-color: var(--luma-line);
+  border-radius: 7px;
+  background: var(--luma-line);
+}
+.app .status-cell {
+  padding: 15px;
+  background: var(--luma-panel);
+}
+.app .status-cell small {
+  color: var(--luma-muted);
+  font-size: 10px;
+}
+.app .status-cell.blackout {
+  border-left-color: var(--luma-danger);
+  background: color-mix(in srgb, var(--luma-danger) 10%, var(--luma-panel));
+}
+.app .media-card {
+  border-color: var(--luma-line);
+  background: var(--luma-raised);
+}
+.app .media-card.selected { border-color: var(--luma-preview); }
+.app .media-actions button {
+  min-height: 30px;
+  border-color: var(--luma-line);
+  font-size: 10px;
+}
+.app :is(.preflight-card, .library-card) {
+  border-color: var(--luma-line);
+  background: var(--luma-panel);
+}
+.app .route-warning {
+  border-left-color: var(--luma-cued);
+  background: color-mix(in srgb, var(--luma-cued) 9%, var(--luma-panel));
+}
