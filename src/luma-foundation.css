@@ -1,0 +1,40 @@
+/* LUMA operator foundation v1. Keep tokens aligned across desktop apps. */
+:root {
+  --luma-canvas: #0d1218;
+  --luma-panel: #151e27;
+  --luma-raised: #1b2732;
+  --luma-line: #344451;
+  --luma-text: #e2eaf1;
+  --luma-muted: #a5b5c3;
+  --luma-focus: #a6caff;
+  --luma-live: #8fe2b5;
+  --luma-cued: #e8c281;
+  --luma-danger: #f1a3a8;
+}
+:is(.app-shell, .app) { color: var(--luma-text); }
+:is(.app-shell, .app) :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--luma-focus);
+  outline-offset: 2px;
+}
+:is(.app-shell, .app) :is(input, select, textarea) { font-variant-numeric: tabular-nums; }
+:is(.app-shell, .app) button:disabled { cursor: not-allowed; }
+:is(.app-shell, .app) button { transition: border-color 100ms ease, background-color 100ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.app-shell, .app) button { transition: none; }
+}
+
+/* Stage: preview/program remain the largest surfaces. */
+.app .top { background:#111922; border-color:var(--luma-line); }
+.app .top nav button { font-size:11px; letter-spacing:.09em; }
+.app .panel { background:var(--luma-panel); border-color:var(--luma-line); }
+.app .panel header { font-size:11px; letter-spacing:.09em; }
+.app .scene small, .app .clip-kind, .app .clip-pad small, .app .clip-pad em { font-size:10px; }
+.app .clip-pad { min-height:104px; padding:12px; }
+.app .clip-pad strong { font-size:12px; }
+.app .clip-pad em { position:static; margin-top:auto; }
+.app .scene > span { font-size:12px; }
+.app .inspector > label, .app .inspector > b { font-size:11px; line-height:1.5; }
+.app .buttonrow button, .app .wide { font-size:10px; min-height:34px; }
+.app .monitor-caption { font-size:11px; line-height:1.5; }
+.app .status-cell small { font-size:10px; }
+.app .media-actions button { font-size:10px; min-height:30px; }
